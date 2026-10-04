@@ -1,10 +1,23 @@
 const express = require('express');
 const cors = require('cors');
+const promBundle = require('express-prom-bundle');
 require('dotenv').config();
 
 const app = express();
 
+// Set up Prometheus metrics middleware
+const metricsMiddleware = promBundle({
+    includeMethod: true,
+    includePath: true,
+    includeStatusCode: true,
+    includeUp: true,
+    promClient: {
+        collectDefaultMetrics: {}
+    }
+});
+
 // Middleware
+app.use(metricsMiddleware);
 app.use(cors());
 app.use(express.json());
 
