@@ -1,13 +1,16 @@
-name: Student Admission CI Pipeline
+name: Student Admission CI/CD Pipeline
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build-and-test:
+  build-test-deploy:
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: read
+      packages: write 
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -27,7 +30,22 @@ jobs:
         cd backend
         npm test
 
-    - name: Build Docker Image
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and Push Docker Image
       run: |
         cd backend
-        docker build -t student-admission-backend .
+        # Build the image with the specific GHCR URL format
+        docker build -t ghcr.io/${{ github.repository_owner }}/student-admission-backend:latest .
+        # Push the image to your GitHub Packages
+        docker push ghcr.io/${{ github.repository_owner }}/student-admission-backend:latest
+
+    - name: Deploy to Render
+      run: |
+        # Ping the Render server to pull the new image and restart
+        
