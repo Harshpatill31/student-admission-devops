@@ -45,6 +45,5 @@ jobs:
         docker push ghcr.io/harshpatill31/student-admission-backend:latest
 
     - name: Deploy to Render
-      run: |
-        # Ping the Render server to pull the new image and restart
+      run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
         
