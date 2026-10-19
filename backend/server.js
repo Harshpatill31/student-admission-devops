@@ -4,6 +4,8 @@ const promBundle = require('express-prom-bundle');
 require('dotenv').config();
 
 const app = express();
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Set up Prometheus metrics middleware
 const metricsMiddleware = promBundle({
